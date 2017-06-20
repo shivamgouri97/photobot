@@ -1,12 +1,7 @@
 
-#
 
-    else:
-      print "There is no recent post!"
-  else:
-    print "Status code other than 200 received!"
 
-  return None
+
 
 
 #get users post

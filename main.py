@@ -58,3 +58,9 @@ def get_own_post():
       image_name = recent_post['data'][0]['id'] + ".jpeg"
       image_url = recent_post['data'][0]['images']['standard_resolution']['url']
       urllib.urlretrieve(image_url, image_name)
+    else:
+      print "There is no recent post!"
+  else:
+    print "Status code other than 200 received!"
+
+    return None

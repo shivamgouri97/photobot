@@ -2,6 +2,9 @@ import urllib
 import requests
 from key import ACCESS_TOKEN
 BASE_URL="http://api.instagram.com/v1"
+from textblob import TextBlob
+from textblob.sentiments import NaiveBayesAnalyzer
+
 
 #function to get self info
 def self_info():
@@ -130,3 +133,35 @@ def like_a_post(insta_username):
     print 'Like was successful!'
   else:
     print 'Your like was unsuccessful. Try again!'
+
+#get comment list
+
+def get_comment_list(insta_username):
+  media_id = get_post_id(insta_username)
+
+  request_url = (BASE_URL + '/media/%s/comments?%s') % (media_id, ACCESS_TOKEN)
+
+  comment_info = requests.get(request_url).json()
+  if comment_info['meta']['code'] == 200:
+    if len(comment_info['data']):
+      for x in range(0, len(comment_info['data'])):
+        print 'Comment: %s || User: %s' % (comment_info['data'][x]['text'], comment_info['data'][x]['from']['username'])
+      else:
+        print 'There are no comments on this post!'
+    else:
+      print 'Status code other than 200 received!'
+
+#post a comment
+def make_a_comment(insta_username):
+  media_id = get_post_id(insta_username)
+  comment_text = raw_input("Your comment: ")
+  payload = {"access_token": ACCESS_TOKEN, "text" : comment_text}
+
+  request_url = (BASE_URL + '/media/%s/comments') % (media_id)
+  print 'Making comment on post: %s' % (request_url)
+  make_comment = requests.post(request_url, payload).json()
+  if make_comment['meta']['code'] == 200:
+    print "Successfully added a new comment!"
+  else:
+    print "Unable to add comment. Try again!"
+

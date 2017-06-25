@@ -213,14 +213,14 @@ def compare(insta_username):
                 blob = TextBlob(comment_text, analyzer=NaiveBayesAnalyzer())
                 if (blob.sentiment.p_neg > blob.sentiment.p_pos):
                     neg_count = neg_count +1
-                    print "this is a negative comment"
+                    print "Negative comment:"
                     print str(neg_count)
                 else:
                     pos_count = pos_count + 1
-                    print"this is a positive comment"
+                    print" Positive comment:"
                     print str(pos_count)
 
-    labels = ['negative comments', 'positive  comments']
+    labels = ['Negative comments', 'Positive  comments']
     sizes = [neg_count , pos_count]
     colors = ['yellowgreen', 'gold']
     plt.pie(sizes, colors=colors, shadow=True,labels=labels,startangle=90)
@@ -251,8 +251,8 @@ def compare(insta_username):
 def start_bot():
     while True:
         print '\n'
-        print 'Hey! Welcome to instaBot!'
-        print 'Here are your menu options:'
+        print 'WELCOME to InstaBot!'
+        print ' Menu options. Please choose:'
         print "1.Get your own details"
         print "2.Get details of a user by username"
         print "3.Get your own recent post"

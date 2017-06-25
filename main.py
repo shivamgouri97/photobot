@@ -4,6 +4,7 @@ from key import ACCESS_TOKEN
 BASE_URL="https://api.instagram.com/v1"
 from textblob import TextBlob
 from textblob.sentiments import NaiveBayesAnalyzer
+import matplotlib.pyplot as plt
 
 
 #function to get self info
@@ -138,7 +139,7 @@ def like_a_post(insta_username):
 
 def get_comment_list(insta_username):
   media_id = get_post_id(insta_username)
-  request_url = (BASE_URL + '/media/%s/comments?%s') % (media_id, ACCESS_TOKEN)
+  request_url = (BASE_URL + '/media/%s/comments?access_token=%s') % (media_id, ACCESS_TOKEN)
   comment_info = requests.get(request_url).json()
   if comment_info['meta']['code'] == 200:
     if len(comment_info['data']):
@@ -195,6 +196,58 @@ def delete_negative_comment(insta_username):
   else:
       print 'Status code other than 200 received!'
 
+def compare(insta_username):
+    neg_count=0
+    pos_count=0
+    media_id = get_post_id(insta_username)
+
+    request_url = (BASE_URL + '/media/%s/comments/?access_token=%s') % (media_id, ACCESS_TOKEN)
+    print 'GET request url : %s' % (request_url)
+    comment_info = requests.get(request_url).json()
+
+    if comment_info['meta']['code'] == 200:
+        if len(comment_info['data']):
+            for x in range(0, len(comment_info['data'])):
+                comment_id = comment_info['data'][x]['id']
+                comment_text = comment_info['data'][x]['text']
+                blob = TextBlob(comment_text, analyzer=NaiveBayesAnalyzer())
+                if (blob.sentiment.p_neg > blob.sentiment.p_pos):
+                    neg_count = neg_count +1
+                    print "this is a negative comment"
+                    print str(neg_count)
+                else:
+                    pos_count = pos_count + 1
+                    print"this is a positive comment"
+                    print str(pos_count)
+
+    labels = ['negative comments', 'positive  comments']
+    sizes = [neg_count , pos_count]
+    colors = ['yellowgreen', 'gold']
+    plt.pie(sizes, colors=colors, shadow=True,labels=labels,startangle=90)
+    plt.axis('equal')
+    plt.tight_layout()
+    plt.show()
+
+'''def hashtag_analysis(insta_username):
+
+    user_id = get_user_id(insta_username)
+    request_url = (BASE_URL + '/users/%s/media/recent/?access_token=%s') % (user_id, ACCESS_TOKEN)
+    print 'GET request url : %s' % (request_url)
+    hashtag_info = requests.get(request_url).json()
+
+    if hashtag_info['meta']['code'] == 200:
+        if len(hashtag_info['data']):
+            for x in range(0, len(hashtag_info['data'])):
+                hash_text = hashtag_info['data'][x]['id']['tags']
+                dict={ hashtag_info :
+
+                }
+        else:
+            print 'There are no tags on this post!'
+    else:
+        print 'Status code other than 200 received!'
+'''
+
 def start_bot():
     while True:
         print '\n'
@@ -210,7 +263,8 @@ def start_bot():
         print "8.Get a list of comments on the recent post of a user"
         print "9.Make a comment on the recent post of a user"
         print "10.Delete negative comments from the recent post of a user"
-        print "11.Exit"
+        print "11.Compare as positive and negative comments  "
+        print "12.Exit"
 
 
 
@@ -244,11 +298,12 @@ def start_bot():
            insta_username = raw_input("Enter the username of the user: ")
            delete_negative_comment(insta_username)
         elif choice == "11":
-            exit()
-        elif choice == "11":
             insta_username = raw_input("Enter the username of the user: ")
-            get_post_id(insta_username)
+            compare(insta_username)
+        elif choice == "12":
+            exit()
         else:
+
             print "wrong choice"
 
 start_bot()
